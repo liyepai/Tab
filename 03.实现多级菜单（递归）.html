@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      .main {
+        width: 1200px;
+        margin: 0 auto;
+      }
+
+      ul {
+        list-style: none;
+        max-width: 300px;
+        background-color: #000;
+        padding: 4px;
+      }
+
+      li {
+        margin-top: 4px;
+        padding-left: 10px;
+      }
+
+      a {
+        color: #fff;
+        text-decoration: none;
+        border-bottom: 1px dashed #fff;
+        font-size: 24px;
+      }
+
+      a::before {
+        content: "☆";
+      }
+
+      .hide {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav"></div>
+    </div>
+  </body>
+  <script>
+    let navData = [
+      { id: 1, text: "一级菜单A", parentId: null },
+      { id: 2, text: "一级菜单B", parentId: null },
+      { id: 3, text: "一级菜单C", parentId: null },
+      { id: 4, text: "二级菜单AA", parentId: 1 },
+      { id: 5, text: "二级菜单AB", parentId: 1 },
+      { id: 6, text: "二级菜单AC", parentId: 1 },
+      { id: 7, text: "二级菜单BA", parentId: 2 },
+      { id: 8, text: "二级菜单BB", parentId: 2 },
+      { id: 9, text: "二级菜单BC", parentId: 2 },
+      { id: 10, text: "二级菜单CA", parentId: 3 },
+      { id: 11, text: "二级菜单CB", parentId: 3 },
+      { id: 12, text: "二级菜单CC", parentId: 3 },
+      { id: 13, text: "三级菜单AAA", parentId: 4 },
+      { id: 14, text: "三级菜单BAA", parentId: 7 },
+      { id: 15, text: "三级菜单CAA", parentId: 10 }
+    ];
+
+    //先定义个函数 取出一级菜单的数据
+    function one(arr, pid) {
+      let jibie = [];
+      //循环这个数组（先用arr参数代替） pid代替我们的条件判断
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].parentId === pid) {
+          //如果符合 我们就把这个i放到我们定义的数组里
+          jibie.push(arr[i]);
+          //调用本函数 看看还有没有子属性
+          arr[i].children = one(arr, arr[i].id);
+        }
+      }
+      return jibie;
+    }
+    let ones = one(navData, null); //这条数据已经转换好成树形结构了
+    console.log(ones);
+
+    //父类
+    let ulfu = document.querySelector(".nav");
+    //封装这个函数  把上面的树形结构  动态生成到页面
+    function shengcheng(shuxing, fulei) {
+      //动态生成：创建需要的标签  添加样式  通过父类加到页面
+      let ul1 = document.createElement("ul");
+      //这里为什么要把他们设置全部隐藏？  因为 等等那些二级菜单 也是调用到这个函数 生成出来的也是ul
+      //所有也是想把他们都隐藏了  等等找到一级菜单 救活
+      ul1.classList.add("hide");
+      //循环这个数据  然后动态生成
+      for (let i = 0; i < shuxing.length; i++) {
+        //生成li
+        let li = document.createElement("li");
+        li.innerHTML = `<a class="item" href="javascript:;">${shuxing[i].text}</a>`;
+        //父类添加子类
+        ul1.appendChild(li);
+
+        //判断下是否还有子类 有就继续创建  和上面这个函数一样
+        if (shuxing[i].children.length !== 0) {
+          shengcheng(shuxing[i].children, li); //这个li对于二级菜单来说是父亲
+        }
+      }
+      //记得添加
+      fulei.appendChild(ul1);
+    }
+    shengcheng(ones, ulfu);
+
+    //通过循环遍历找到ul  加个类名
+    //要借用数组的方法
+    Array.prototype.forEach.call(ulfu.children, e => {
+      e.classList.remove("hide");
+    });
+    //通过事件委托  给ul注册事件
+    ulfu.addEventListener("click", function(e) {
+      if (e.target.classList.contains("item")) {
+        e.target.nextElementSibling.classList.toggle("hide");
+      }
+    });
+
+    //  e.target.nextElementSibling.classList.toggle('hide')
+  </script>
+</html>

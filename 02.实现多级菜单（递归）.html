@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      .main {
+        width: 1200px;
+        margin: 0 auto;
+      }
+
+      ul {
+        list-style: none;
+        max-width: 300px;
+        background-color: #000;
+        padding: 4px;
+      }
+
+      li {
+        margin-top: 4px;
+        padding-left: 10px;
+      }
+
+      a {
+        color: #fff;
+        text-decoration: none;
+        border-bottom: 1px dashed #fff;
+        font-size: 24px;
+      }
+
+      a::before {
+        content: "☆";
+      }
+
+      .hide {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav"></div>
+    </div>
+  </body>
+  <script>
+    let navData = [
+      { id: 1, text: "一级菜单A", parentId: null },
+      { id: 2, text: "一级菜单B", parentId: null },
+      { id: 3, text: "一级菜单C", parentId: null },
+      { id: 4, text: "二级菜单AA", parentId: 1 },
+      { id: 5, text: "二级菜单AB", parentId: 1 },
+      { id: 6, text: "二级菜单AC", parentId: 1 },
+      { id: 7, text: "二级菜单BA", parentId: 2 },
+      { id: 8, text: "二级菜单BB", parentId: 2 },
+      { id: 9, text: "二级菜单BC", parentId: 2 },
+      { id: 10, text: "二级菜单CA", parentId: 3 },
+      { id: 11, text: "二级菜单CB", parentId: 3 },
+      { id: 12, text: "二级菜单CC", parentId: 3 },
+      { id: 13, text: "三级菜单AAA", parentId: 4 },
+      { id: 14, text: "三级菜单BAA", parentId: 7 },
+      { id: 15, text: "三级菜单CAA", parentId: 10 }
+    ];
+
+    //先定义个函数  用于判断符合条件的菜单
+    function cd(arr, pid) {
+      let jibie = [];
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].parentId === pid) {
+          jibie.push(arr[i]);
+          //生成更多下级的菜单
+          //使用递归
+          arr[i].children = cd(arr, arr[i].id);
+        }
+      }
+      return jibie;
+    }
+    //已经可以生成多个级别菜单了
+    let cdd = cd(navData, null);
+    console.log(cdd);
+    
+
+    //先获取到结构里 ul的父亲
+    let ulfu = document.querySelector(".nav");
+
+    //封装另外一个函数  封装递归的函数  生成结构出页面
+    //  这个arr  是这边放 我们生成好的树形结构的数据
+    //这个fujiedian  是一个一级菜单的父亲 ul  的父亲
+    function fzdigui(arr, fujiedian) {
+      //先生成一个ul  是要放在使用同级菜单的ul
+      let ul1 = document.createElement("ul");
+      //这个ul一开始是隐藏的  使用给这个ul添加 隐藏的类名
+      ul1.classList.add("hide");
+      //遍历这个未知的arr  这个是放在数据的 数组
+      //这个arr  表面是这样的  三个一级菜单  一级菜单包着二级菜单
+      for (let i = 0; i < arr.length; i++) {
+        //然后就创建 li标签  ，然后生成结构  然后  父级别的ul 把这个li生成
+        let li = document.createElement("li");
+        //加这个a标签  是因为我们鼠标放在上面 是箭头来的  不是文本的箭头  加这个类名的原因是  我们在点击这个a标签 如果有这个 类名 我们就移除这个hide
+        li.innerHTML = `<a class="item" href="javascript:;">${arr[i].text}</a>`;
+        //父亲生儿子
+        ul1.appendChild(li);
+        //如果还有子级元素 那就继续生成 使用递归调用本函数fzdigui
+        //到这里  已经可以生成一级菜单了
+        //  这个arr[i]该怎么理解的呢？ 这个arr  是放着一级菜单的  遍历到的只有一级菜单  但是他可能还有子元素
+        //判断下 如果有  就继续生成    我们本身这个函数就是生成结构的  直接调用本函数  改参数就好
+        if (arr[i].children.length !== 0) {
+          //arr[i].children  我们整体当成一个数据
+          //arr[i].children指的是 1级菜单下的数据  li指的是父亲节点（如果能执行到这里 那就证明这个一级菜单下有二级菜单 ）
+          //二级菜单都是基于一级菜单的li  所以这个li是他的父亲来的
+          fzdigui(arr[i].children, li);
+        }
+      }
+      fujiedian.appendChild(ul1);
+    }
+    //我们将上面取到树形结构的数据 放进去  然后取得一级菜单的ul的父亲
+    fzdigui(cdd, ulfu);
+
+    //通过借用数组循环的方式  找到这个ul  移除这个隐藏的类名
+
+    Array.prototype.forEach.call(ulfu.children, e =>
+      e.classList.remove("hide")
+    );
+    ulfu.addEventListener("click", function(e) {
+      if (e.target.classList.contains("item")) {
+        e.target.nextElementSibling.classList.toggle("hide");
+      }
+    });
+    // 把第一层的ul的hide类名去除
+    //   Array.prototype.forEach.call(ulfu.children,e => e.classList.remove('hide'));
+    //   // 需要点击li的时候，能够把对应的子级菜单收起或者展开
+    //   // li里面是a标签，此时点击的时候，我们点到的是a标签，而不是li，判断的应该是a标签
+    //   ulfu.addEventListener('click',function(e){
+    //     if(e.target.classList.contains('item')){
+    //       // 把它的下一个兄弟元素，显示或者隐藏 - 下一个兄弟元素是ul,通过hide这个class控制显示和隐藏
+    //       e.target.nextElementSibling.classList.toggle('hide');
+    //     }
+    //   })
+  </script>
+</html>

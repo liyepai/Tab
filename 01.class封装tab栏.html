@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .box {
+        width: 400px;
+        height: 400px;
+        border: 1px solid #000;
+        margin: 100px auto;
+        border-bottom: 0 none;
+      }
+      .row {
+        display: flex;
+        border-bottom: 1px solid #000;
+      }
+      .item {
+        width: 100px;
+        height: 40px;
+        border-right: 1px solid #000;
+        /* line-height: 40px;
+      text-align: center; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .content {
+        height: 357px;
+        flex: 0 0 100%;
+        display: none;
+      }
+      .active {
+        background-color: red;
+      }
+      .show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="row">
+        <div class="item active">影音</div>
+        <div class="item">书籍</div>
+        <div class="item">零食</div>
+      </div>
+      <div class="row">
+        <div class="content show">影音的内容</div>
+        <div class="content">书籍的内容</div>
+        <div class="content">零食的内容</div>
+      </div>
+    </div>
+  </body>
+  <script>
+    /*
+  面向对象的封装
+    - 骗自己 - tab就是一个对象
+    - tab栏的特征和行为
+      - 特征
+        -
+      - 行为
+        - 注册事件
+        - 切换分类的样式
+        - 切换内容
+*/
+
+    //写一个类  来封装
+    class Tab {
+      //特征：(属性)  我们可以把封装需要的
+      constructor(a, b, c, d, e) {
+        this.a = a || ".item"; //a代表着tab栏的每个小格子
+        this.b = b || "mouseover"; //b代表着事件类型
+        this.c = c || "active"; //c代表着.active {background-color: red}  是一个颜色 鼠标移动进去的颜色
+        this.d = d || ".content"; //d代表着中间的内容
+        this.e = e || "show"; //e代表着显示的效果
+        //在下面注册事件  需要获取元素 在这里获取  下面可以直接调用  我们鼠标移入小格子  我们得获取小格子元素
+        this.aa = document.querySelectorAll(this.a); //获取所有小格子元素（伪数组）
+        this.dd = document.querySelectorAll(this.d); //获取所有中间的内容（也是伪数组）
+
+        //调用这个 注册事件的方法  然后我们实例化这个类的时候 就会执行这个方法
+        this.zhuche();
+      }
+
+      //行为：(方法)
+      //封装方法：注册事件  用上面的abcde  来做个普通的注册事件
+      //注册事件：
+      zhuche() {
+        //鼠标移入 tab栏  触发注册事件
+        //遍历这个小格子的伪数组  取得元素注册事件
+        this.aa.forEach((e, i) => {
+          e.addEventListener(this.b, e => {
+            //先定一个变量  暂时代表我们鼠标移入的当前元素
+            let target = e.target; //当前对象
+            //调用我们封装好的那两个方法
+            this.shangse(target);
+            //调用内容那个方法
+            this.neirong(i); //把当前索引放进来
+          });
+          //当鼠标移入  切换内容（tab栏的颜色变了）   在另外写个方法  等等这里直接调用
+          //内容跟着改变        在外面另外写个方法
+        });
+      }
+
+      //切换分类 改变颜色  当鼠标移入tab栏的小格子  给当前的小格子上颜色
+      //需要写个暂替的形参  把他当成当前对象不知道对不对
+      shangse(hongse) {
+        this.aa.forEach(e => {
+          //和以前一样  使用排他，  先让所有的颜色类死  然后救活当前那个  用颜色救活
+          e.classList.remove(this.c); //在外面救活
+        });
+        hongse.classList.add(this.c);
+      }
+
+      //切换内容
+      neirong(suoying) {
+        //先把所有的内容隐藏（移除那个显示的类）  然后把内容伪数组的当前对象  显示（类来的）
+        this.dd.forEach(e => {
+          e.classList.remove(this.e);
+        });
+        //救活当前  利用形参指定当前索引
+        this.dd[suoying].classList.add(this.e);
+      }
+    }
+
+    //现在我们没给那些参数默认值  所以需要手动写进去
+    //  a代表着tab栏的每个小格子 b代表着事件类型 c代表着.active d代表着中间的内容 e代表着显示的效果
+    // constructor(a, b, c, d, e) 依次放进去
+    let tab = new Tab();
+  </script>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      .box {
+        width: 400px;
+        height: 400px;
+        border: 1px solid #000;
+        margin: 100px auto;
+        border-bottom: 0 none;
+      }
+      .row {
+        display: flex;
+        border-bottom: 1px solid #000;
+      }
+      .item {
+        width: 100px;
+        height: 40px;
+        border-right: 1px solid #000;
+        /* line-height: 40px;
+      text-align: center; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .content {
+        height: 357px;
+        flex: 0 0 100%;
+        display: none;
+      }
+      .active {
+        background-color: red;
+      }
+      .show {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <div class="row">
+        <div class="item active">影音</div>
+        <div class="item">书籍</div>
+        <div class="item">零食</div>
+      </div>
+      <div class="row">
+        <div class="content show">影音的内容</div>
+        <div class="content">书籍的内容</div>
+        <div class="content">零食的内容</div>
+      </div>
+    </div>
+  </body>
+  <script>
+    /*
+  面向对象的封装
+    - 骗自己 - tab就是一个对象
+    - tab栏的特征和行为
+      - 特征
+        -
+      - 行为
+        - 注册事件
+        - 切换分类的样式
+        - 切换内容
+*/
+
+    //写一个类  来封装
+    class Tab {
+      constructor(ge, shijian, neirong, yanse, xianshi) {
+        //tab栏
+        this.ge = ge || ".item";
+        //事件类型
+        this.shijian = shijian || "mouseover";
+        //内容
+        this.neirong = neirong||  ".content"  ;
+        //颜色
+        this.yanse = yanse||  "active";
+        //显示隐藏
+        this.xianshi = xianshi|| "show";
+
+        //注册事件  获取元素 在这获取 tab栏和内容
+        this.tab = document.querySelectorAll(this.ge);
+        this.nr = document.querySelectorAll(this.neirong);
+        this.zhuche();  
+      }
+      //方法
+      //注册事件：移入ge
+      zhuche(){
+        this.tab.forEach((e,i)=>{
+          e.addEventListener(this.shijian,e=>{
+            let t=e.t;
+            this.Yanse(t);
+            this.Neirong(i)
+          })
+        })
+      }
+      
+      //切记颜色
+      Yanse(hongse){
+        this.tab.forEach(e=>{
+          e.classList.remove(this.yanse)
+        })
+        hongse.classList.add(this.yanse)
+      }
+      //切换内容
+      Neirong(suoying){
+        this.neirong.forEach(e=>{
+          e.classList.remove(this.e)
+        })
+        this.neirong[suoying].classList.add(this.e)
+      }
+
+
+    }
+
+    //现在我们没给那些参数默认值  所以需要手动写进去
+    //  a代表着tab栏的每个小格子 b代表着事件类型 c代表着.active d代表着中间的内容 e代表着显示的效果
+    // constructor(a, b, c, d, e) 依次放进去
+    let tab=new Tab()
+  </script>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      .main {
+        width: 1200px;
+        margin: 0 auto;
+      }
+
+      ul {
+        list-style: none;
+        max-width: 300px;
+        /* background-color: #000; */
+        padding: 4px;
+      }
+
+      li {
+        margin-top: 4px;
+        padding-left: 10px;
+      }
+
+      a {
+        /* color: #fff; */
+        text-decoration: none;
+        border-bottom: 1px dashed #fff;
+        font-size: 24px;
+      }
+
+      a::before {
+        content: "☆";
+      }
+
+      .hide {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="nav"></div>
+    </div>
+  </body>
+  <script>
+    let navData = [
+      { id: 1, text: "一级菜单A", parentId: null },
+      { id: 2, text: "一级菜单B", parentId: null },
+      { id: 3, text: "一级菜单C", parentId: null },
+      { id: 4, text: "二级菜单AA", parentId: 1 },
+      { id: 5, text: "二级菜单AB", parentId: 1 },
+      { id: 6, text: "二级菜单AC", parentId: 1 },
+      { id: 7, text: "二级菜单BA", parentId: 2 },
+      { id: 8, text: "二级菜单BB", parentId: 2 },
+      { id: 9, text: "二级菜单BC", parentId: 2 },
+      { id: 10, text: "二级菜单CA", parentId: 3 },
+      { id: 11, text: "二级菜单CB", parentId: 3 },
+      { id: 12, text: "二级菜单CC", parentId: 3 },
+      { id: 13, text: "三级菜单AAA", parentId: 4 },
+      { id: 14, text: "三级菜单BAA", parentId: 7 },
+      { id: 15, text: "三级菜单CAA", parentId: 10 }
+    ];
+    //我们先用循环做出来  然后看看怎么办
+    let arr = []; //用来放符合条件的菜单
+    for (let i = 0; i < navData.length; i++) {
+      //判断下符合条件的一级菜单
+      //如果这个数组的第i个对象  的parentId=null  他们他就是一级菜单
+      if (navData[i].parentId === null) {
+        //把这个i放进去数组里
+        arr.push(navData[i]);
+        //这里已经可以拿到一级菜单了 现在拿二级
+        //因为 我们是要放到一级菜单里面的 所有得用一级菜单变成数组
+        navData[i].children = [];
+        //然后再找符合二级菜单条件的放到这个一级菜单就好
+        //有得从这个数据里找遍历
+        for (let j = 0; j < navData.length; j++) {
+          if (navData[j].parentId === navData[i].id) {
+            navData[i].children.push(navData[j]);
+          }
+        }
+      }
+    }
+    console.log(arr)//现在已经可以做到了  现在  如果数据不明确 我们得用递归做
+  </script>
+</html>
